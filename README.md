@@ -41,8 +41,7 @@ Source CSVs (CRM + ERP)
 └─────────────────┘
 ```
 
-Architecture diagram: [`docs/architecture.png`](docs/architecture.png)
-
+![Architecture Diagram](docs/architecture.png)
 ---
 
 ## Project Structure
