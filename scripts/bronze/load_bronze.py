@@ -3,6 +3,7 @@ import duckdb
 
 DB_PATH = "data/warehouse.duckdb"
 
+
 def load_bronze():
 
     """
@@ -13,50 +14,30 @@ def load_bronze():
     Returns:
         None
     """
-    print("====================")
-    print(">> Loading data into bronze schema...")
-    print("====================")
-
-    con = duckdb.connect(DB_PATH)
-
-    print("====================")
-    print(">> Loading cust_info table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.crm_cust_info AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/cust_info.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Loading prd_info table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.crm_prd_info AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/prd_info.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Loading sales_details table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.crm_sales_details AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/sales_details.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Loading cust_az12 table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.erp_cust_az12 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/CUST_AZ12.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Loading loc_a101 table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.erp_loc_a101 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/LOC_A101.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Loading px_cat_g1v2 table.")
-    con.execute("CREATE OR REPLACE TABLE bronze.erp_px_cat_g1v2 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/PX_CAT_G1V2.csv', AUTO_DETECT = TRUE)")
-    print("====================")
-
-    print("====================")
-    print(">> Data loaded into bronze schema.")
-    print("====================")
-    con.close()
-
+    bronze_tables = [
+        ("crm_cust_info", "datasets/source_crm/cust_info.csv"),
+        ("crm_prd_info", "datasets/source_crm/prd_info.csv"),
+        ("crm_sales_details", "datasets/source_crm/sales_details.csv"),
+        ("erp_cust_az12", "datasets/source_erp/CUST_AZ12.csv"),
+        ("erp_loc_a101", "datasets/source_erp/LOC_A101.csv"),
+        ("erp_px_cat_g1v2", "datasets/source_erp/PX_CAT_G1V2.csv")
+    ]
     
-
-
+    print("====================")
+    print(">> Loading CSV files into bronze schema...")
+    
+    try:
+        con = duckdb.connect(DB_PATH)
+        for table_name, file_path in bronze_tables:
+            print(f">> Loading {table_name}...")
+            con.execute(f"CREATE OR REPLACE TABLE bronze.{table_name} AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('{file_path}', AUTO_DETECT = TRUE)")
+        print(">> Data loaded into bronze schema.")
+    except Exception as e:
+        print(f">> ERROR: {e}")
+        raise
+    finally:
+        con.close()
+    print("====================")
 if __name__ == "__main__":
     load_bronze()
     
