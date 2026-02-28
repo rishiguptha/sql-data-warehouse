@@ -71,7 +71,9 @@ sql-data-warehouse/
 │   ├── init_db.py                # Create schemas
 │   └── run_pipeline.py           # Orchestrate full pipeline
 ├── tests/
-│   └── quality_checks_bronze.sql # Row counts, nulls, duplicates
+│   ├── quality_checks_bronze.sql    # Row counts, nulls, duplicates in bronze
+│   └── quality_checks_silver.sql    # Referential integrity, standardization in silver
+│   └── quality_checks_gold.sql      # Referential integrity, standardization in gold
 ├── Dockerfile
 ├── docker-compose.yml
 ├── pyproject.toml
