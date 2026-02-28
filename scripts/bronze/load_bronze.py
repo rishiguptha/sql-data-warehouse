@@ -13,29 +13,45 @@ def load_bronze():
     Returns:
         None
     """
-
+    print("====================")
     print(">> Loading data into bronze schema...")
+    print("====================")
 
     con = duckdb.connect(DB_PATH)
+
+    print("====================")
     print(">> Loading cust_info table.")
     con.execute("CREATE OR REPLACE TABLE bronze.crm_cust_info AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/cust_info.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Loading prd_info table.")
     con.execute("CREATE OR REPLACE TABLE bronze.crm_prd_info AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/prd_info.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Loading sales_details table.")
     con.execute("CREATE OR REPLACE TABLE bronze.crm_sales_details AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_crm/sales_details.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Loading cust_az12 table.")
     con.execute("CREATE OR REPLACE TABLE bronze.erp_cust_az12 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/CUST_AZ12.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Loading loc_a101 table.")
     con.execute("CREATE OR REPLACE TABLE bronze.erp_loc_a101 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/LOC_A101.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Loading px_cat_g1v2 table.")
     con.execute("CREATE OR REPLACE TABLE bronze.erp_px_cat_g1v2 AS SELECT *, CURRENT_TIMESTAMP AS dwh_load_date FROM read_csv('datasets/source_erp/PX_CAT_G1V2.csv', AUTO_DETECT = TRUE)")
+    print("====================")
 
+    print("====================")
     print(">> Data loaded into bronze schema.")
+    print("====================")
     con.close()
 
     
