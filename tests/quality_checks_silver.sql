@@ -1,4 +1,18 @@
 -- ============================================================
+-- Script  : quality_checks_silver.sql
+-- Layer   : Silver
+-- Purpose : Validate the data quality of all tables in the silver
+--           schema after transformation. Checks include: duplicate and
+--           NULL primary keys, unwanted whitespace, invalid dates,
+--           referential integrity between related tables, standardized
+--           categorical values (gender, marital status, country, product
+--           line), and data consistency rules (sales = quantity * price).
+-- Scope   : silver.crm_cust_info, silver.crm_prd_info,
+--           silver.crm_sales_details, silver.erp_cust_az12,
+--           silver.erp_loc_a101, silver.erp_px_cat_g1v2
+-- Usage   : Run after load_silver.sql to confirm transformation quality.
+--           A clean silver layer should return 0 rows on most checks.
+-- ============================================================
 -- Quality Checks: silver.crm_cust_info
 -- ============================================================
 SELECT '>> [1/6] Starting quality checks for: silver.crm_cust_info' AS progress;

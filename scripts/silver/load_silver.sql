@@ -1,4 +1,18 @@
------ DATA LOADING INTO SILVER TABLES ------
+-- ============================================================
+-- Script  : load_silver.sql
+-- Layer   : Silver
+-- Purpose : Load and transform data from the bronze schema into
+--           the silver schema. Applies data cleaning, type casting,
+--           deduplication, standardization, and derived columns.
+--           This script is idempotent — each table is truncated
+--           before insertion, so it is safe to re-run at any time.
+-- Source  : bronze.crm_cust_info, bronze.crm_prd_info,
+--           bronze.crm_sales_details, bronze.erp_cust_az12,
+--           bronze.erp_loc_a101, bronze.erp_px_cat_g1v2
+-- Target  : silver.crm_cust_info, silver.crm_prd_info,
+--           silver.crm_sales_details, silver.erp_cust_az12,
+--           silver.erp_loc_a101, silver.erp_px_cat_g1v2
+-- ============================================================
 
 .timer on
 

@@ -1,4 +1,18 @@
 -- ============================================================
+-- Script  : quality_checks_bronze.sql
+-- Layer   : Bronze
+-- Purpose : Validate the data quality of all tables in the bronze
+--           schema after ingestion. Checks include: duplicate and
+--           NULL primary keys, unwanted whitespace in string columns,
+--           invalid or out-of-range dates, referential integrity,
+--           distinct value distributions, and data consistency rules
+--           (e.g. sales = quantity * price).
+-- Scope   : bronze.crm_cust_info, bronze.crm_prd_info,
+--           bronze.crm_sales_details, bronze.erp_cust_az12,
+--           bronze.erp_loc_a101, bronze.erp_px_cat_g1v2
+-- Usage   : Run after load_bronze.py to confirm raw data quality.
+--           Queries that return rows indicate issues to investigate.
+-- ============================================================
 -- Quality Checks: bronze.crm_cust_info
 -- ============================================================
 SELECT '>> [1/6] Starting quality checks for: bronze.crm_cust_info' AS progress;

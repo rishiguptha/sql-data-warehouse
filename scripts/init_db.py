@@ -1,3 +1,16 @@
+# ============================================================
+# Script  : init_db.py
+# Layer   : Infrastructure
+# Purpose : Initialize the DuckDB warehouse database by creating
+#           the three-layer medallion architecture schemas:
+#           bronze (raw), silver (cleaned), and gold (aggregated).
+#           This script must be run once before any data loading.
+#           It is safe to re-run — schemas are created only if
+#           they do not already exist (CREATE SCHEMA IF NOT EXISTS).
+# Target  : data/warehouse.duckdb
+#           Schemas: bronze, silver, gold
+# ============================================================
+
 import duckdb
 
 DB_PATH = "data/warehouse.duckdb"

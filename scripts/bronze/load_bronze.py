@@ -1,3 +1,17 @@
+# ============================================================
+# Script  : load_bronze.py
+# Layer   : Bronze
+# Purpose : Load raw CSV files from source systems (CRM and ERP)
+#           into the bronze schema as-is, with minimal transformation.
+#           Adds a dwh_load_date timestamp column to track ingestion time.
+#           This script is idempotent — each table is fully replaced
+#           using CREATE OR REPLACE TABLE on every run.
+# Source  : datasets/source_crm/, datasets/source_erp/
+# Target  : bronze.crm_cust_info, bronze.crm_prd_info,
+#           bronze.crm_sales_details, bronze.erp_cust_az12,
+#           bronze.erp_loc_a101, bronze.erp_px_cat_g1v2
+# ============================================================
+
 import duckdb
 import time
 
