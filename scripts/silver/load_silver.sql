@@ -1,5 +1,7 @@
 ----- DATA LOADING INTO SILVER TABLES ------
 
+.timer on
+
 SELECT '====================' AS info;
 SELECT '>> Starting silver layer load...' AS info;
 SELECT '====================' AS info;
@@ -313,3 +315,5 @@ SELECT '>> silver.erp_px_cat_g1v2 loaded.' AS info;
 SELECT '====================' AS info;
 SELECT '>> Silver layer load complete.' AS info;
 SELECT '====================' AS info;
+
+.timer off
