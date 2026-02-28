@@ -1,8 +1,19 @@
 import duckdb
 
-DB_PATH = "warehouse.duckdb"
+DB_PATH = "data/warehouse.duckdb"
 
 def init_database():
+
+    """
+    Initialize the database by creating the necessary schemas.
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    
+    print(f">> Connecting to database at {DB_PATH}")
     con = duckdb.connect(DB_PATH)
     
     print(">> Creating schemas...")
