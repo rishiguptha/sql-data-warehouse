@@ -1,0 +1,10 @@
+[project]
+name = "sql-data-warehouse"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.4.4",
+    "pandas>=3.0.1",
+]
