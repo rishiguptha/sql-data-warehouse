@@ -146,7 +146,7 @@ docker-compose up
 
 ## Key Design Decisions
 
-**DuckDB over SQL Server** — File-based, no server setup. Runs in-process with Python. Recruiter can clone and run in 60 seconds with zero infrastructure.
+**DuckDB over SQL Server** — File-based, no server setup. Runs in-process with Python. Any one can clone and run in 60 seconds with zero infrastructure.
 
 **Materialized tables over views** — Gold layer writes data to disk. Downstream BI tools query pre-computed results, not live SQL re-executions. Production-grade pattern.
 
