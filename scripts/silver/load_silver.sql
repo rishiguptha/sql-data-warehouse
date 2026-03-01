@@ -14,7 +14,6 @@
 --           silver.erp_loc_a101, silver.erp_px_cat_g1v2
 -- ============================================================
 
-.timer on
 
 SELECT '====================' AS info;
 SELECT '>> Starting silver layer load...' AS info;
@@ -330,4 +329,3 @@ SELECT '====================' AS info;
 SELECT '>> Silver layer load complete.' AS info;
 SELECT '====================' AS info;
 
-.timer off

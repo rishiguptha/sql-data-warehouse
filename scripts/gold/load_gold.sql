@@ -12,7 +12,7 @@
 -- Target  : gold.dim_customers, gold.dim_products, gold.fact_sales
 -- ============================================================
 
-.timer on
+
 
 SELECT '====================' AS info;
 SELECT '>> Starting gold layer load...' AS info;
@@ -103,4 +103,3 @@ SELECT '====================' AS info;
 SELECT '>> Gold layer load complete.' AS info;
 SELECT '====================' AS info;
 
-.timer off
