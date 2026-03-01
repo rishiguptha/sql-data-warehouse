@@ -1,4 +1,4 @@
-# SQL Data Warehouse With DuckDB, Python and Docker
+# Modern Data Warehouse With DuckDB, Python and Docker
 A modern data warehouse built with **DuckDB, Python, and Docker** using the Medallion Architecture (Bronze → Silver → Gold). Consolidates sales data from two source systems (CRM + ERP) into a star schema optimized for analytical reporting.
 
 > Based on the [Data with Baara SQL Data Warehouse Project](https://www.youtube.com/playlist?list=PLNcg_FV9n7qaUWeyUkPfiVtMbKlrfMqA8), modified to use a cloud-native, serverless stack instead of SQL Server.
