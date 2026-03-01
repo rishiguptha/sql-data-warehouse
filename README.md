@@ -113,7 +113,7 @@ Two simulated source systems, 6 CSV files total:
 | `gold.dim_products` | 11 | One row per active product | CRM + ERP enriched, historical versions excluded |
 | `gold.fact_sales` | 9 | One row per order line | Corrected sales metrics, surrogate FK lookups |
 
-![Data Model](docs/Data Model.png)
+![Data Model](docs/data_model.png)
 
 > 📖 Full column-level documentation: [`docs/data_catalog.md`](docs/data_catalog.md)
 
