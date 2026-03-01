@@ -1,0 +1,6 @@
+services:
+  pipeline:
+    build: .
+    container_name: sql_dwh
+    volumes:
+      - ./data:/app/data
