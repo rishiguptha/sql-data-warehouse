@@ -9,11 +9,10 @@ A modern data warehouse built with **DuckDB, Python, and Docker** using the Meda
 ## Tech Stack
 
 | Tool | Version | Purpose |
-|------|---------|---------|
+|------|---------|---------| 
 | **DuckDB** | ≥ 1.4.4 | In-process analytical database (replaces SQL Server) |
 | **Python** | ≥ 3.12 | Pipeline orchestration and ingestion scripts |
-| **pandas** | ≥ 3.0.1 | Data manipulation (available for future transforms) |
-| **Docker** | — | Containerized, reproducible environment *(in progress)* |
+| **Docker** | — | Containerized, reproducible environment |
 | **uv** | — | Fast Python package management |
 
 ---
@@ -25,7 +24,7 @@ A modern data warehouse built with **DuckDB, Python, and Docker** using the Meda
 | Layer | Role | Load Strategy |
 |-------|------|---------------|
 | **Bronze** | Raw ingestion — data as-is from source CSVs | `CREATE OR REPLACE TABLE` (full replace) |
-| **Silver** | Cleaned & standardized — nulls, types, dedup, business rules | `TRUNCATE + INSERT` (full reload) |
+| **Silver** | Cleaned & standardized — nulls, types, dedup, business rules | `DROP + CREATE` then `TRUNCATE + INSERT` (full reload) |
 | **Gold** | Star schema — query-ready materialized tables for BI | `DROP + CREATE` (full rebuild) |
 
 ### Data Flow
@@ -39,7 +38,7 @@ A modern data warehouse built with **DuckDB, Python, and Docker** using the Meda
 ```
 sql-data-warehouse/
 ├── data/
-│   └── warehouse.duckdb              # DuckDB database file (auto-created)
+│   └── warehouse.duckdb              # DuckDB database file (auto-created, gitignored)
 ├── datasets/
 │   ├── source_crm/                   # CRM source CSVs
 │   │   ├── cust_info.csv
@@ -51,25 +50,25 @@ sql-data-warehouse/
 │       └── PX_CAT_G1V2.csv
 ├── docs/
 │   ├── architecture.png              # Medallion architecture diagram
-│   ├── Data Model.png                # Gold layer star schema (ER diagram)
+│   ├── data_model.png                # Gold layer star schema (ER diagram)
 │   ├── Integration-model.png         # CRM + ERP source integration model
 │   ├── sql-datawarehouse-dataflow.png # End-to-end data flow diagram
-│   └── data_catalog.md              # Gold layer data dictionary
+│   └── data_catalog.md               # Gold layer data dictionary
 ├── scripts/
 │   ├── bronze/
-│   │   └── load_bronze.py           # Ingest CSVs → bronze schema
+│   │   └── load_bronze.py            # Ingest CSVs → bronze schema
 │   ├── silver/
-│   │   └── load_silver.sql          # Clean + standardize → silver schema
+│   │   └── load_silver.sql           # Clean + standardize → silver schema
 │   ├── gold/
-│   │   └── load_gold.sql            # Star schema → gold schema
-│   ├── init_db.py                   # Create bronze/silver/gold schemas
-│   └── run_pipeline.py              # Orchestrate full pipeline ⬜ in progress
+│   │   └── load_gold.sql             # Star schema → gold schema
+│   ├── init_db.py                    # Create bronze/silver/gold schemas
+│   └── run_pipeline.py               # Orchestrate full pipeline end-to-end
 ├── tests/
-│   ├── quality_checks_bronze.sql    # Row counts, nulls, duplicates in bronze
-│   ├── quality_checks_silver.sql    # Referential integrity, standardization in silver
-│   └── quality_checks_gold.sql      # FK integrity checks in gold
-├── Dockerfile                        # ⬜ in progress
-├── docker-compose.yml
+│   ├── quality_checks_bronze.sql     # Nulls, duplicates, whitespace, date validity
+│   ├── quality_checks_silver.sql     # Referential integrity, standardization
+│   └── quality_checks_gold.sql       # Surrogate key uniqueness, FK integrity
+├── Dockerfile                        # Container image definition
+├── docker-compose.yml                # Service + volume mount config
 ├── pyproject.toml                    # Python project + dependencies (uv)
 └── README.md
 ```
@@ -126,16 +125,15 @@ Two simulated source systems, 6 CSV files total:
 | [`docs/architecture.png`](docs/architecture.png) | Medallion architecture overview (Bronze → Silver → Gold) |
 | [`docs/sql-datawarehouse-dataflow.png`](docs/sql-datawarehouse-dataflow.png) | End-to-end data flow from source CSVs through all three layers |
 | [`docs/Integration-model.png`](docs/Integration-model.png) | CRM + ERP source system integration model showing how tables are joined |
-| [`docs/Data Model.png`](docs/Data%20Model.png) | Gold layer star schema ER diagram (dim_customers, dim_products, fact_sales) |
+| [`docs/data_model.png`](docs/data_model.png) | Gold layer star schema ER diagram (dim_customers, dim_products, fact_sales) |
 | [`docs/data_catalog.md`](docs/data_catalog.md) | Gold layer data dictionary — entity relationships, column definitions, business rules, and sample queries |
 
 ---
 
-
 ## Naming Conventions
 
 | Layer | Pattern | Example |
-|-------|---------|---------|
+|-------|---------|---------| 
 | Bronze | `<source>_<entity>` | `crm_cust_info`, `erp_loc_a101` |
 | Silver | `<source>_<entity>` (cleaned) | `crm_cust_info`, `erp_cust_az12` |
 | Gold Dimensions | `dim_<entity>` | `dim_customers`, `dim_products` |
@@ -147,46 +145,40 @@ Two simulated source systems, 6 CSV files total:
 
 ## How to Run
 
-### Prerequisites
+### Option A — Local (uv)
+
+#### Prerequisites
 
 ```bash
 pip install uv
 uv sync
 ```
 
-### Step 1 — Initialize the database
+#### Full pipeline (one command)
 
 ```bash
+uv run scripts/run_pipeline.py
+```
+
+This runs all three layers in sequence: init → bronze → silver → gold.
+
+#### Step-by-step (manual)
+
+```bash
+# Step 1 — Initialize schemas
 uv run scripts/init_db.py
-```
 
-Creates the `data/warehouse.duckdb` file with `bronze`, `silver`, and `gold` schemas.
-
-### Step 2 — Load bronze layer
-
-```bash
+# Step 2 — Load bronze layer
 uv run scripts/bronze/load_bronze.py
-```
 
-Ingests all 6 CSV files into the `bronze` schema as-is, with a `dwh_load_date` audit column.
-
-### Step 3 — Load silver layer
-
-```bash
+# Step 3 — Load silver layer
 duckdb data/warehouse.duckdb < scripts/silver/load_silver.sql
-```
 
-Cleans, casts, deduplicates, and standardizes data into the `silver` schema.
-
-### Step 4 — Load gold layer
-
-```bash
+# Step 4 — Load gold layer
 duckdb data/warehouse.duckdb < scripts/gold/load_gold.sql
 ```
 
-Builds `dim_customers`, `dim_products`, and `fact_sales` in the `gold` schema.
-
-### Run quality checks
+#### Run quality checks
 
 ```bash
 # After bronze load
@@ -201,7 +193,21 @@ duckdb data/warehouse.duckdb < tests/quality_checks_gold.sql
 
 ---
 
-## Pipeline Progress
+### Option B — Docker
+
+```bash
+# Build and run (mounts ./data so the .duckdb file persists on your host)
+docker compose up
+
+# Rebuild image after code changes
+docker compose up --build
+```
+
+The container runs `uv run scripts/run_pipeline.py` and exits after the pipeline completes. The `warehouse.duckdb` file is written to `./data/` on your host via the volume mount.
+
+---
+
+## Pipeline Status
 
 | Layer | Status | Script |
 |-------|--------|--------|
@@ -211,8 +217,8 @@ duckdb data/warehouse.duckdb < tests/quality_checks_gold.sql
 | Gold | ✅ Complete | `scripts/gold/load_gold.sql` |
 | Quality Checks | ✅ Complete | `tests/quality_checks_*.sql` |
 | Data Catalog | ✅ Complete | `docs/data_catalog.md` |
-| Orchestration | ⬜ Not Started | `scripts/run_pipeline.py` |
-| Docker | ⬜ Not Started | `Dockerfile`, `docker-compose.yml` |
+| Orchestration | ✅ Complete | `scripts/run_pipeline.py` |
+| Docker | ✅ Complete | `Dockerfile`, `docker-compose.yml` |
 
 ---
 
@@ -222,9 +228,14 @@ duckdb data/warehouse.duckdb < tests/quality_checks_gold.sql
 
 **Materialized tables over views** — Gold layer writes data to disk. Downstream BI tools query pre-computed results, not live SQL re-executions. Production-grade pattern.
 
-**Full load (Truncate & Insert)** — All 3 layers use full load. Silver uses `TRUNCATE + INSERT` for safe reloads without schema changes; Bronze uses `CREATE OR REPLACE`. Source data is small and historical — no need for incremental merge at this scale.
+**Full load (Truncate & Insert)** — All 3 layers use full load. Bronze uses `CREATE OR REPLACE TABLE`; Silver uses `DROP + CREATE` for DDL then `TRUNCATE + INSERT` for data; Gold uses `DROP + CREATE`. Source data is small and historical — no need for incremental merge at this scale.
 
-**Idempotent scripts** — Every script is safe to re-run. Bronze uses `CREATE OR REPLACE TABLE`, Silver uses `DROP + CREATE` for DDL then `TRUNCATE + INSERT` for data, Gold uses `DROP + CREATE`.
+**Idempotent scripts** — Every script is safe to re-run with no side effects:
+- Bronze: `CREATE OR REPLACE TABLE` atomically replaces the table.
+- Silver: `DROP TABLE IF EXISTS` + `CREATE` re-establishes the schema, then `TRUNCATE + INSERT` reloads all rows.
+- Gold: `DROP TABLE IF EXISTS` + `CREATE TABLE AS SELECT` fully rebuilds each table.
+
+**Surrogate keys are not stable across reloads** — `customer_key` and `product_key` are generated with `ROW_NUMBER()`. They are reassigned on every full rebuild. Always join on surrogate keys within the warehouse; do not persist or cache these integers in external systems.
 
 **CRM as master system for gender** — When CRM and ERP conflict on gender, CRM value is used. ERP is the fallback only when CRM returns `n/a`.
 

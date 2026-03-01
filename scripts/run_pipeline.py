@@ -11,7 +11,7 @@ def load_silver(connection):
 
     try:
         with open("scripts/silver/load_silver.sql", "r") as f:
-            connection.execute(f.read())
+            connection.executescript(f.read())
 
     except Exception as e:
         print(f">> Error: {e}")
@@ -26,7 +26,7 @@ def load_gold(connection):
 
     try:
         with open("scripts/gold/load_gold.sql", "r") as f:
-            connection.execute(f.read())
+            connection.executescript(f.read())
 
     except Exception as e:
         print(f">> Error: {e}")
