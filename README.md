@@ -28,6 +28,10 @@ A modern data warehouse built with **DuckDB, Python, and Docker** using the Meda
 | **Silver** | Cleaned & standardized — nulls, types, dedup, business rules | `TRUNCATE + INSERT` (full reload) |
 | **Gold** | Star schema — query-ready materialized tables for BI | `DROP + CREATE` (full rebuild) |
 
+### Data Flow
+
+![Data Flow Diagram](docs/sql-datawarehouse-dataflow.png)
+
 ---
 
 ## Project Structure
@@ -46,7 +50,10 @@ sql-data-warehouse/
 │       ├── LOC_A101.csv
 │       └── PX_CAT_G1V2.csv
 ├── docs/
-│   ├── architecture.png              # Architecture diagram
+│   ├── architecture.png              # Medallion architecture diagram
+│   ├── Data Model.png                # Gold layer star schema (ER diagram)
+│   ├── Integration-model.png         # CRM + ERP source integration model
+│   ├── sql-datawarehouse-dataflow.png # End-to-end data flow diagram
 │   └── data_catalog.md              # Gold layer data dictionary
 ├── scripts/
 │   ├── bronze/
@@ -72,6 +79,8 @@ sql-data-warehouse/
 ## Data Sources
 
 Two simulated source systems, 6 CSV files total:
+
+![Integration Model](docs/Integration-model.png)
 
 | Schema | Table | Rows (approx.) | Description |
 |--------|-------|----------------|-------------|
@@ -104,6 +113,8 @@ Two simulated source systems, 6 CSV files total:
 | `gold.dim_products` | 11 | One row per active product | CRM + ERP enriched, historical versions excluded |
 | `gold.fact_sales` | 9 | One row per order line | Corrected sales metrics, surrogate FK lookups |
 
+![Data Model](docs/Data Model.png)
+
 > 📖 Full column-level documentation: [`docs/data_catalog.md`](docs/data_catalog.md)
 
 ---
@@ -112,8 +123,11 @@ Two simulated source systems, 6 CSV files total:
 
 | File | Description |
 |------|-------------|
-| [`docs/architecture.png`](docs/architecture.png) | End-to-end pipeline architecture diagram (Bronze → Silver → Gold) |
-| [`docs/data_catalog.md`](docs/data_catalog.md) | Gold layer data dictionary — entity relationships, all column definitions, data types, business rules, and sample queries |
+| [`docs/architecture.png`](docs/architecture.png) | Medallion architecture overview (Bronze → Silver → Gold) |
+| [`docs/sql-datawarehouse-dataflow.png`](docs/sql-datawarehouse-dataflow.png) | End-to-end data flow from source CSVs through all three layers |
+| [`docs/Integration-model.png`](docs/Integration-model.png) | CRM + ERP source system integration model showing how tables are joined |
+| [`docs/Data Model.png`](docs/Data%20Model.png) | Gold layer star schema ER diagram (dim_customers, dim_products, fact_sales) |
+| [`docs/data_catalog.md`](docs/data_catalog.md) | Gold layer data dictionary — entity relationships, column definitions, business rules, and sample queries |
 
 ---
 
